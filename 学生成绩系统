@@ -1,0 +1,584 @@
+#include<stdio.h>
+#include<conio.h>
+#include<malloc.h>
+#include<string.h>
+#include<stdlib.h>//清屏
+
+typedef struct STUDENT//
+{
+
+	char studentName[20];/*学生姓名*/
+	char studentNumber[20];/*学生学号*/
+	char major[20];/*学生专业*/
+	char classNumber[20];/*学生班级*/
+	char gender[20];/*学生性别*/
+	float mark1;/*第1门成绩*/
+	float mark2;/*第2门成绩*/
+	float mark3;/*第3门成绩*/
+	float total;
+	struct STUDENT *next;
+}STUDENT;
+
+STUDENT *headLink;/*链表表头指针,适用于全局*/
+/************************************
+所有函数的声明
+************************************/
+void CreateHeadLink();//建立链表表头
+STUDENT *MallocNode();//申请新结点并初始化
+void InsertOneNode(STUDENT *t);//在表尾插入一个结点
+void ReadInfoFormFile();//从文件读入数据
+void DesplayOneNode(STUDENT *t);//输出一个结点的信息
+void OutputInformation();//向屏幕输出所有信息(第一个功能)
+void GetInformation(STUDENT *t);//输入添加学生的信息
+void Insertonestudent();//添加一个学生(第二个功能)
+void DeleteNodeBystudentNumber();//删除一个学生(第三个功能)
+void CompositorByTotalMark();//按总成绩排序(第四个功能)
+void Outputtofile();//输出所有信息到文件
+void Choicesubject(STUDENT *t);//修改一个成绩
+void Ifcontinue(STUDENT *t);//询问部分
+void Changemark();//查找并修改成绩(第五个功能)
+void Search();//查询信息（第六个功能）
+
+void Welcomeinterface();//欢迎界面
+void menu();//选择功能界面
+void First();//第一个功能
+void Second();//第二个功能
+void Third();//第三个功能
+void Forth();//第四个功能
+void Fifth();//第五个功能
+
+int main()
+{
+	CreateHeadLink();
+	ReadInfoFormFile();
+	Welcomeinterface();
+}
+
+
+/************************************
+函数功能：显示欢迎界面
+************************************/
+void Welcomeinterface()
+{
+	printf("\n\n\n\t\t\t      学生成绩管理系统\n\n");
+    printf("\t\t\t                    2019年1月1日");
+    printf("\n\n\t\t\t                      高鑫宇");
+    printf("\n");
+	system("pause");
+	system("cls");
+	menu();
+}
+
+
+/************************************
+函数功能：显示功能选择界面
+************************************/
+void menu()
+{
+	int n;
+	printf("\n");printf("\n");
+	printf("          ");
+	printf("***********************************************************\n");
+	printf("\n");
+	printf("          ");
+	printf("                        系统功能\n");
+	printf("          ");
+	printf("                  1、显示已有学生成绩信息\n");
+	printf("          ");
+	printf("                  2、删除一位学生的信息\n");
+	printf("          ");
+	printf("                  3、修改学生成绩\n");
+	printf("          ");
+	printf("                  4、按总成绩降序排序\n");
+	printf("          ");
+	printf("                  5、查询学生信息\n");
+	printf("          ");
+	printf("                  6、退出\n");
+	printf("\n");
+	printf("          ");
+	printf("***********************************************************\n");
+	printf("\n");printf("\n");
+	printf("请输入您要使用的功能的序号：");
+	scanf("%d",&n);
+	system("cls");
+	switch(n)
+	{
+	case 1:First();break;
+	case 2:Second();break;
+	case 3:Third();break;
+	case 4:Forth();break;
+	case 5:Fifth();break;
+	case 6:Welcomeinterface();break;
+	}
+}
+
+/************************************
+函数功能：第一个功能实现
+************************************/
+void First()
+{
+		OutputInformation();
+		printf("按任意键返回主菜单\n");
+		system("pause");
+		system("cls");
+		menu();
+}
+
+
+/************************************
+函数功能：第二个功能实现
+************************************/
+void Second()
+{
+	int n;
+	DeleteNodeBystudentNumber();
+	printf("\n");
+	printf("是否继续删除？\n\n");
+	printf("\t1.Yes\t2.No\n");
+	printf("请输入您的选择序号：");
+	scanf("%d",&n);
+	if(n==1)
+	{
+		system("cls");
+		Third();
+	}
+	else
+	{
+		system("cls");
+		printf("删除后的学生信息\n");
+		OutputInformation();
+		printf("按任意键返回主菜单\n");
+		system("pause");
+		system("cls");
+		menu();
+	}
+}
+
+
+/************************************
+函数功能：第三个功能实现
+************************************/
+void Third()
+{
+	int n;
+	Changemark();
+	printf("\n");
+	printf("是否继续修改其他人的成绩？\n\n");
+	printf("\t1.Yes\t2.No\n");
+	printf("请输入您的选择序号：");
+	scanf("%d",&n);
+	if(n==1)
+	{
+		system("cls");
+		Forth();
+	}
+	else
+	{
+		system("cls");
+		printf("修改后的学生信息\n");
+		OutputInformation();
+		printf("按任意键返回主菜单\n");
+		system("pause");
+		system("cls");
+		menu();
+	}
+}
+
+/************************************
+函数功能：第四个功能实现
+************************************/
+void Forth()
+{
+	CompositorByTotalMark();
+	printf("按任意键返回主菜单\n");
+	system("pause");
+	system("cls");
+	menu();
+}
+
+/************************************
+函数功能：第五个功能实现
+************************************/
+void Fifth()
+{
+	Search();
+	printf("按任意键返回主菜单\n");
+	system("pause");
+	system("cls");
+	menu();
+}
+/************************************
+函数功能：建立链表表头
+************************************/
+void CreateHeadLink()
+{
+	STUDENT *p;
+	p=(STUDENT*)malloc(sizeof(STUDENT));
+	headLink=p;//给表头指针赋初值
+	p->next=NULL;
+}
+
+
+/************************************
+函数功能：申请一个新结点，并将其初始化
+************************************/
+STUDENT *MallocNode()
+{
+	STUDENT *p;
+	int i;
+	p=(STUDENT*)malloc(sizeof(STUDENT));
+	if(p==NULL)
+		return NULL;
+	for(i=0;i<20;i++)
+		p->studentNumber[i]='\0';
+	for(i=0;i<20;i++)
+		p->studentName[i]='\0';
+    for(i=0;i<20;i++)
+		p->major[i]='\0';
+    for(i=0;i<20;i++)
+		p->classNumber[i]='\0';
+    for(i=0;i<20;i++)
+		p->gender[i]='\0';
+	p->mark1=0.0;
+	p->mark2=0.0;
+	p->mark3=0.0;
+	p->next=NULL;//便于在插入结点时直接插在表尾
+	return p;
+}
+
+
+/************************************
+函数功能：在表尾插入一个结点
+************************************/
+void InsertOneNode(STUDENT *t)
+{
+	STUDENT *p;
+	p=headLink;//表头指针前面已赋值
+	while(p->next)
+	{
+		p=p->next;
+	}
+	p->next=t;
+}
+
+
+/************************************
+函数功能：从文件读入数据
+************************************/
+void ReadInfoFormFile()
+{
+	FILE *fp;
+	STUDENT *p;
+	fp=fopen("D:\\gxy\\1\\student.txt","r");
+	if(!fp)
+	{
+		printf("文件不存在\n");
+		return;
+	}
+	p=MallocNode();
+	while(fscanf(fp,"%s%s%s%s%s%f%f%f",p->studentName,p->studentNumber,p->major,p->classNumber,p->gender,&(p->mark1),&(p->mark2),&(p->mark3))>0)
+	{
+		InsertOneNode(p);
+		p=MallocNode();
+	}
+	fclose(fp);
+}
+
+
+/************************************
+函数功能：输出一个结点的信息
+************************************/
+void DesplayOneNode(STUDENT *t)
+{
+	printf("%s\t",t->studentName);
+	printf("%s\t",t->studentNumber);
+	printf("%s\t",t->major);
+	printf("%s\t",t->studentNumber);
+	printf("%s\t",t->gender);
+	printf("%.2f\t",t->mark1);
+	printf("%.2f\t",t->mark2);
+	printf("%.2f\t",t->mark3);
+	t->total=t->mark1+t->mark2+t->mark3;
+	printf("%.2f\t",t->mark1+t->mark2+t->mark3);
+	printf("%.2f\t\t",(t->mark1+t->mark2+t->mark3)/3);
+	float Ave=(t->mark1+t->mark2+t->mark3)/3;
+	if(Ave>=90)printf("A\n");
+	if(Ave>=80&&Ave<90)printf("B\n");
+	if(Ave>=70&&Ave<80)printf("C\n");
+	if(Ave>=60&&Ave<70)printf("D\n");
+	if(Ave<60)printf("E\n");
+}
+
+
+/************************************
+函数功能：向屏幕输出所有信息
+************************************/
+void OutputInformation()
+{
+	STUDENT *p;
+	p=headLink->next;
+	if(p==NULL)
+	{
+		printf("现在没有学生信息，请先输入学生信息\n\n");
+		return;
+	}
+	printf("\n姓名\t学号\t专业\t班级\t性别\t成绩1\t成绩2\t成绩3\t总成绩\t平均成绩\t分类\n\n");
+	while(p)
+	{
+		DesplayOneNode(p);
+		p=p->next;
+	}
+}
+/************************************
+函数功能：根据用户输入的学号删除该学生
+************************************/
+void DeleteNodeBystudentNumber()
+{
+	char studentNumber[10];
+	STUDENT *p,*q;
+	int flag=0;
+	printf("删除一个学生\n");
+	printf("请输入要删除的学生学号：");
+	scanf("%s",studentNumber);
+	p=headLink;
+	q=headLink->next;
+	while(q)
+	{
+		if(strcmp(q->studentNumber,studentNumber)==0)
+		{
+			p->next=q->next;
+			free(q);
+			flag=1;
+			break;
+		}
+		p=p->next;
+		q=q->next;
+	}
+	if(!flag)
+	{
+		printf("不存在该学号的学生\n");
+		return;
+	}
+	printf("成功删除\n");
+}
+
+/************************************
+函数功能：按总成绩排序
+************************************/
+void CompositorByTotalMark()
+{
+	STUDENT exchange,*r,*p,*q;
+	r=headLink->next;
+	if(r==NULL)
+	{
+		printf("现在还没学生信息,请先输入学生信息\n");
+		return;
+	}
+	while(r)/*两层while循环实现排序*/
+	{
+		p=r;
+		q=r->next;
+		while(q)
+		{p->total=p->mark1+p->mark2+p->mark3;
+		 q->total=q->mark1+q->mark2+q->mark3;
+			if(p->total<q->total)
+			{
+				strcpy(exchange.studentName,p->studentName);/*先复制p结点信息到exchange*/
+				strcpy(exchange.studentNumber,p->studentNumber);
+				strcpy(exchange.major,p->major);
+				strcpy(exchange.classNumber,p->classNumber);
+				strcpy(exchange.gender,p->gender);
+				exchange.mark1=p->mark1;
+				exchange.mark2=p->mark2;
+				exchange.mark3=p->mark3;
+
+				strcpy(p->studentName,q->studentName);/*再复制q结点信息到p*/
+				strcpy(p->studentNumber,q->studentNumber);
+				strcpy(p->major,q->major);
+				strcpy(p->classNumber,q->classNumber);
+				strcpy(p->gender,q->gender);
+				p->mark1=q->mark1;
+				p->mark2=q->mark2;
+				p->mark3=q->mark3;
+
+				strcpy(q->studentNumber,exchange.studentNumber);/*最后复制exchange结点信息到q*/
+				strcpy(q->studentName,exchange.studentName);
+				strcpy(q->major,exchange.major);
+				strcpy(q->classNumber,exchange.classNumber);
+				strcpy(q->gender,exchange.gender);
+				q->mark1=exchange.mark1;
+				q->mark2=exchange.mark2;
+				q->mark3=exchange.mark3;
+			}
+			q=q->next;
+		}
+		r=r->next;
+	}
+	printf("按总成绩降序排序\n");
+	OutputInformation();
+	Outputtofile();
+}
+
+/************************************
+函数功能：输出所有信息到文件
+************************************/
+void Outputtofile()
+{
+	STUDENT *p;
+	p=headLink->next;
+	FILE *fp;
+	fp=fopen("D:\\gxy\\1\\student.txt","w");
+	fprintf(fp,"\n姓名\t学号\t专业\t班级\t性别\t成绩1\t成绩2\t成绩3\t总成绩\t平均成绩\t分类\n\n");
+	while(p)
+	{
+    fprintf(fp,"%s\t\t",p->studentName);
+	fprintf(fp,"%s\t",p->studentNumber);
+	fprintf(fp,"%s\t",p->major);
+	fprintf(fp,"%s\t",p->classNumber);
+	fprintf(fp,"%s\t",p->gender);
+	fprintf(fp,"%.2f\t",p->mark1);
+	fprintf(fp,"%.2f\t",p->mark2);
+	fprintf(fp,"%.2f\t",p->mark3);
+	fprintf(fp,"%.2f\t",p->mark1+p->mark2+p->mark3);
+	float Ave=(p->mark1+p->mark2+p->mark3)/3;
+	fprintf(fp,"%.2f\t\t",(p->mark1+p->mark2+p->mark3)/3);
+	if(Ave>=90)fprintf(fp,"A\n");
+	if(Ave>=80&&Ave<90)fprintf(fp,"B\n");
+	if(Ave>=70&&Ave<80)fprintf(fp,"C\n");
+	if(Ave>=60&&Ave<70)fprintf(fp,"D\n");
+	if(Ave<60)fprintf(fp,"E\n");
+	p=p->next;
+	}
+	fclose(fp);
+}
+/************************************
+函数功能：查找成绩
+************************************/
+void Search()
+{
+    STUDENT *p;
+	p=headLink->next;
+	char studentNumber[20];
+	char studentName[20];
+	printf("请输入您要查询的类型：1.按姓名查询 2.按学号查询");
+	printf("\n");
+	int flag;
+	scanf("%d",&flag);
+	if(flag==1)
+    {
+        printf("请输入您要查找成绩的学生的姓名：");
+	scanf("%s",studentName);
+	while(p!=NULL&&strcmp(studentName,p->studentName)!=0)//查找对应学生
+	{
+		p=p->next;
+	}
+	if(!p)
+	{
+		printf("\n没有此姓名的学生,请重新输入。\n\n");
+		Search();
+	}
+	else
+    {
+        printf("\n姓名\t学号\t专业\t班级\t性别\t成绩1\t成绩2\t成绩3\t总成绩\t平均成绩\t分类\n\n");
+        DesplayOneNode(p);
+
+    }
+    }
+    if(flag==2)
+    {
+        printf("请输入您要修改成绩的学生的学号：");
+	scanf("%s",studentNumber);
+	while(p!=NULL&&strcmp(studentNumber,p->studentNumber)!=0)//查找对应学生
+	{
+		p=p->next;
+	}
+	if(!p)
+	{
+		printf("\n没有此学号的学生。\n\n");
+		Search();
+	}
+	else
+    {
+        printf("\n姓名\t学号\t专业\t班级\t性别\t成绩1\t成绩2\t成绩3\t总成绩\t平均成绩\t分类\n\n");
+        DesplayOneNode(p);
+
+    }
+    }
+
+}
+
+/************************************
+函数功能：修改一个成绩
+************************************/
+void Choicesubject(STUDENT *t)
+{
+	float mark;
+	int n;
+	int flag;
+	printf("\t成绩1\t成绩2\t成绩3\n");
+	printf("请输入您要修改的成绩的序号：");
+	scanf("%d",&n);
+	printf("请输入新的成绩：");
+	scanf("%f",&mark);
+	printf("是否确认修改 1、是 2、 否\n");
+	scanf("%d",&flag);
+	if(flag==1)
+    {
+        switch(n)
+	{
+	case 1:t->mark1=mark;break;
+	case 2:t->mark2=mark;break;
+	case 3:t->mark3=mark;break;
+	}
+    }
+    else
+    {
+        system("CLS");
+        menu();
+    }
+}
+
+/************************************
+函数功能：询问部分
+************************************/
+void Ifcontinue(STUDENT *t)
+{
+	int n;
+	printf("您是否要修改其它成绩？\n");
+	printf("\t1.Yes\t2.No\n");
+	printf("请输入您的选择序号：");
+	scanf("%d",&n);
+	if(n==1)
+	{
+		Choicesubject(t);
+		Ifcontinue(t);
+	}
+	else printf("请继续\n");
+}
+
+/************************************
+函数功能：查找并修改成绩
+************************************/
+void Changemark()
+{
+	STUDENT *p;
+	p=headLink->next;
+	char studentNumber[10];
+	printf("请输入您要修改成绩的学生的学号：");
+	scanf("%s",studentNumber);
+	while(p!=NULL&&strcmp(studentNumber,p->studentNumber)!=0)//查找对应学生
+	{
+		p=p->next;
+	}
+	if(!p)
+	{
+		printf("\n没有此学号的学生,请重新输入。\n\n");
+		Changemark();
+	}
+	else
+	{
+		Choicesubject(p);
+		printf("修改成功\n");
+		Ifcontinue(p);
+	}
+}
